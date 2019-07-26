@@ -6,9 +6,10 @@ module StripeMock
         klass.add_handler 'get /v1/customers/(.*)/sources', :retrieve_sources
         klass.add_handler 'post /v1/customers/(.*)/sources', :create_source
         klass.add_handler 'post /v1/customers/(.*)/sources/(.*)/verify', :verify_source
-        klass.add_handler 'get /v1/customers/(.*)/sources/(.*)', :retrieve_source
+        klass.add_handler 'get /v1/customers/(.*)/sources/(.*)', :retrieve_customer_source
         klass.add_handler 'delete /v1/customers/(.*)/sources/(.*)', :delete_source
         klass.add_handler 'post /v1/customers/(.*)/sources/(.*)', :update_source
+        klass.add_handler 'get /v1/sources/(.*)', :retrieve_source
       end
 
       def create_source(route, method_url, params, headers)
@@ -22,6 +23,11 @@ module StripeMock
       end
 
       def retrieve_source(route, method_url, params, headers)
+        route =~ method_url
+        assert_existence :card, $1, get_card_or_bank_by_token($1)
+      end
+
+      def retrieve_customer_source(route, method_url, params, headers)
         route =~ method_url
         customer = assert_existence :customer, $1, customers[$1]
 
